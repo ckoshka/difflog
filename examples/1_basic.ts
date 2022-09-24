@@ -26,12 +26,15 @@ const state = <TodoList>{
 }
 
 // now we can create our logger
-const L = Logger(loggingFn)(state);
+const L = Logger(loggingFn)({} as TodoList);
 
 // first on the agenda...
-L.modify(a => a.tasks.push({
+state.tasks.push({
     name: "chase_some_birds",
     when: new Date(),
     estimatedMinutes: 10,
     subtasks: {}
-}))
+});
+
+L.update(state);
+

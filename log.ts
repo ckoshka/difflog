@@ -2,8 +2,9 @@ import { diff, produce } from "./deps.ts";
 
 export type Logger<T> = {
 	// deno-lint-ignore no-explicit-any
-	modify: (change: (a0: T) => any) => void;
-    replace: (change: (a0: T) => T) => void;
+	edit: (mutatingFn: (a0: T) => any) => void;
+    map: (mappingFn: (a0: T) => T) => void;
+    update: (replacement: T) => void;
 };
 
 // deno-lint-ignore no-explicit-any
@@ -19,14 +20,17 @@ export const Logger = (sink: (msg: any) => void | Promise<void>) =>
             innerObj = newObj;
         }
 		return {
-			modify: (fn) => {
+			edit: (fn) => {
 					const newObj = produce(innerObj, (t) => {
                         fn(t as T);
                     });
 					logNewObj(newObj)
 				},
-            replace: (fn) => {
+            map: (fn) => {
                 const newObj = produce(innerObj, fn);
+                logNewObj(newObj)
+            },
+            update: (newObj) => {
                 logNewObj(newObj)
             },
 		};
